@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Density Garden</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <header>
+      <a href="/">density garden<span> / a study in proximity</span></a>
+      <div>
+        <button id="open">Open study</button
+        ><button id="save">Save study</button
+        ><input type="file" id="file" accept=".json,application/json" hidden />
+      </div>
+    </header>
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">Unsupervised learning · DBSCAN</p>
+          <h1>Let the neighborhoods<br />find their shape.</h1>
+        </div>
+        <p>
+          No chosen number of clusters.<br />Just a radius, a density
+          threshold,<br />and the points in between.
+        </p>
+      </section>
+      <div class="toolbar">
+        <label
+          >Example<select id="example">
+            <option value="custom" disabled>Custom study</option>
+            <option value="islands" selected>Two islands</option>
+            <option value="border">The ambiguous border</option>
+            <option value="duplicates">Coincident observations</option>
+          </select></label
+        ><label
+          >Radius ε<input
+            id="eps"
+            type="number"
+            value="65"
+            min="1"
+            max="300"
+            step="1" /></label
+        ><label
+          >Minimum points<input
+            id="minpts"
+            type="number"
+            value="5"
+            min="1"
+            max="50"
+            step="1" /></label
+        ><button id="apply">Apply</button
+        ><button id="undo" disabled>Undo</button>
+      </div>
+      <p id="message" role="status">Preparing the garden…</p>
+      <div class="workspace">
+        <section class="plot-wrap">
+          <svg
+            id="plot"
+            viewBox="-30 -30 1060 1060"
+            role="group"
+            aria-label="Point cloud. Select points to inspect their neighborhoods."
+          ></svg>
+          <div class="legend">
+            <span>● Core</span><span>○ Border</span><span>× Noise</span
+            ><span>Dashed ring: ambiguous border</span>
+          </div>
+          <p class="hint">
+            Click empty ground to add a point. Select a point to see its radius.
+            Coordinates run from 0 to 1,000.
+          </p>
+        </section>
+        <aside>
+          <p class="eyebrow">The current landscape</p>
+          <div id="summary"></div>
+          <label>Inspect point<select id="selected"></select></label>
+          <div id="inspection"></div>
+          <button id="remove" disabled>Remove selected</button>
+          <details>
+            <summary>Add by coordinates</summary>
+            <form id="add">
+              <label
+                >X<input
+                  id="x"
+                  type="number"
+                  min="0"
+                  max="1000"
+                  step="1"
+                  value="500"
+                  required /></label
+              ><label
+                >Y<input
+                  id="y"
+                  type="number"
+                  min="0"
+                  max="1000"
+                  step="1"
+                  value="500"
+                  required /></label
+              ><button>Add point</button>
+            </form>
+          </details>
+        </aside>
+      </div>
+      <section class="sweep">
+        <h2>A small change in radius.</h2>
+        <p>
+          Compare nearby settings without treating cluster count as a score.
+          Click a row to apply its radius.
+        </p>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Radius</th>
+                <th>Clusters</th>
+                <th>Core</th>
+                <th>Border</th>
+                <th>Noise</th>
+                <th>Ambiguous</th>
+              </tr>
+            </thead>
+            <tbody id="sweep"></tbody>
+          </table>
+        </div>
+      </section>
+      <details>
+        <summary>Neighborhood-distance profile</summary>
+        <p>
+          Sorted distance to the minimum-points-th nearest observation,
+          including itself. A point is core exactly when this distance is at
+          most ε. When fewer observations exist, the distance is unavailable.
+        </p>
+        <svg
+          id="kplot"
+          viewBox="0 0 900 220"
+          role="img"
+          aria-label="Sorted neighborhood distances and radius threshold"
+        ></svg>
+      </details>
+      <details>
+        <summary>How to read a border</summary>
+        <p>
+          Core points have at least the minimum number of observations inside
+          the inclusive radius, counting themselves. Connected core points form
+          clusters. A non-core point touching a core cluster is a border point;
+          a point touching none is noise.
+        </p>
+        <p>
+          A border point can touch several core components without connecting
+          them. We expose all candidate clusters and assign the lowest cluster
+          number. Numbers follow the first core point in input order. Reordering
+          can therefore change an ambiguous border assignment without changing
+          the core components.
+        </p>
+        <p>
+          Duplicate coordinates are separate observations. Euclidean distance is
+          applied directly to these synthetic integer coordinates; this is not
+          geographic distance or automatic feature scaling. Density parameters
+          should reflect the data, and there is no universal best radius.
+        </p>
+      </details>
+      <div class="exports">
+        <button id="evidence" disabled>Export evidence</button
+        ><button id="csv" disabled>Export assignments CSV</button
+        ><span id="cost"></span>
+      </div>
+    </main>
+    <footer>Patterns, with room for uncertainty.</footer>
+  </body>
+</html>
