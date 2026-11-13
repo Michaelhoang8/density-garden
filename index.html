@@ -9,103 +9,101 @@
   </head>
   <body>
     <header>
-      <a href="/">density garden<span> / a study in proximity</span></a>
+      <h1>Density Garden</h1>
       <div>
-        <button id="open">Open study</button
+        <button id="analysis-open">Analysis</button
+        ><button id="open">Open study</button
         ><button id="save">Save study</button
         ><input type="file" id="file" accept=".json,application/json" hidden />
       </div>
     </header>
     <main>
-      <section class="intro">
-        <div>
-          <p class="eyebrow">Unsupervised learning · DBSCAN</p>
-          <h1>Let the neighborhoods<br />find their shape.</h1>
+      <div class="control-panel">
+        <h2>DBSCAN</h2>
+        <div class="toolbar">
+          <label
+            >Example<select id="example">
+              <option value="custom" disabled>Custom study</option>
+              <option value="islands" selected>Two islands</option>
+              <option value="border">The ambiguous border</option>
+              <option value="duplicates">Coincident observations</option>
+            </select></label
+          ><label
+            >Radius ε<input
+              id="eps"
+              type="number"
+              value="65"
+              min="1"
+              max="300"
+              step="1" /></label
+          ><label
+            >Minimum points<input
+              id="minpts"
+              type="number"
+              value="5"
+              min="1"
+              max="50"
+              step="1" /></label
+          ><button id="apply">Apply</button
+          ><button id="undo" disabled>Undo</button>
         </div>
-        <p>
-          No chosen number of clusters.<br />Just a radius, a density
-          threshold,<br />and the points in between.
+      </div>
+      <section class="plot-wrap">
+        <svg
+          id="plot"
+          viewBox="-30 -30 1060 1060"
+          role="group"
+          aria-label="Point cloud. Select points to inspect their neighborhoods."
+        ></svg>
+        <div class="legend">
+          <span>● Core</span><span>○ Border</span><span>× Noise</span
+          ><span>Dashed ring: ambiguous border</span>
+        </div>
+        <p class="hint">
+          Click empty ground to add a point. Select a point to see its radius.
+          Coordinates run from 0 to 1,000.
         </p>
       </section>
-      <div class="toolbar">
-        <label
-          >Example<select id="example">
-            <option value="custom" disabled>Custom study</option>
-            <option value="islands" selected>Two islands</option>
-            <option value="border">The ambiguous border</option>
-            <option value="duplicates">Coincident observations</option>
-          </select></label
-        ><label
-          >Radius ε<input
-            id="eps"
-            type="number"
-            value="65"
-            min="1"
-            max="300"
-            step="1" /></label
-        ><label
-          >Minimum points<input
-            id="minpts"
-            type="number"
-            value="5"
-            min="1"
-            max="50"
-            step="1" /></label
-        ><button id="apply">Apply</button
-        ><button id="undo" disabled>Undo</button>
-      </div>
-      <p id="message" role="status">Preparing the garden…</p>
-      <div class="workspace">
-        <section class="plot-wrap">
-          <svg
-            id="plot"
-            viewBox="-30 -30 1060 1060"
-            role="group"
-            aria-label="Point cloud. Select points to inspect their neighborhoods."
-          ></svg>
-          <div class="legend">
-            <span>● Core</span><span>○ Border</span><span>× Noise</span
-            ><span>Dashed ring: ambiguous border</span>
-          </div>
-          <p class="hint">
-            Click empty ground to add a point. Select a point to see its radius.
-            Coordinates run from 0 to 1,000.
-          </p>
-        </section>
-        <aside>
-          <p class="eyebrow">The current landscape</p>
-          <div id="summary"></div>
-          <label>Inspect point<select id="selected"></select></label>
-          <div id="inspection"></div>
-          <button id="remove" disabled>Remove selected</button>
-          <details>
-            <summary>Add by coordinates</summary>
-            <form id="add">
-              <label
-                >X<input
-                  id="x"
-                  type="number"
-                  min="0"
-                  max="1000"
-                  step="1"
-                  value="500"
-                  required /></label
-              ><label
-                >Y<input
-                  id="y"
-                  type="number"
-                  min="0"
-                  max="1000"
-                  step="1"
-                  value="500"
-                  required /></label
-              ><button>Add point</button>
-            </form>
-          </details>
-        </aside>
+      <aside>
+        <p class="eyebrow">Clustering</p>
+        <div id="summary"></div>
+        <label>Inspect point<select id="selected"></select></label>
+        <div id="inspection"></div>
+        <button id="remove" disabled>Remove selected</button>
+        <details>
+          <summary>Add by coordinates</summary>
+          <form id="add">
+            <label
+              >X<input
+                id="x"
+                type="number"
+                min="0"
+                max="1000"
+                step="1"
+                value="500"
+                required /></label
+            ><label
+              >Y<input
+                id="y"
+                type="number"
+                min="0"
+                max="1000"
+                step="1"
+                value="500"
+                required /></label
+            ><button>Add point</button>
+          </form>
+        </details>
+      </aside>
+    </main>
+    <p id="message" role="status">Computing neighborhoods…</p>
+    <dialog id="analysis-panel" aria-label="Clustering analysis">
+      <div class="dialog-heading">
+        <h2>Clustering analysis</h2>
+        <button id="analysis-close">Close</button>
       </div>
       <section class="sweep">
-        <h2>A small change in radius.</h2>
+        <h2>Radius comparison</h2>
         <p>
           Compare nearby settings without treating cluster count as a score.
           Click a row to apply its radius.
@@ -167,7 +165,6 @@
         ><button id="csv" disabled>Export assignments CSV</button
         ><span id="cost"></span>
       </div>
-    </main>
-    <footer>Patterns, with room for uncertainty.</footer>
+    </dialog>
   </body>
 </html>

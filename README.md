@@ -4,6 +4,10 @@ An interactive DBSCAN workbench for synthetic 2D point clouds. Inspect inclusive
 
 ![Workbench](docs/workbench.png)
 
+## Interface
+
+The point cloud sits between density controls and a selected-point inspector. Coordinate guides show the plot scale, while invisible larger targets make points easier to select. Keyboard selection preserves focus as neighborhoods redraw. Radius comparisons, distance profiles, and evidence exports open in Analysis; mobile controls stack above a square plot.
+
 ## Run
 
 ```sh

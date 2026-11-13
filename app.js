@@ -93,6 +93,44 @@ function draw() {
   const plot = $("plot");
   plot.replaceChildren();
   if (!result) return;
+  for (const tick of [0, 250, 500, 750, 1000]) {
+    plot.append(
+      svg("line", {
+        x1: tick,
+        y1: 0,
+        x2: tick,
+        y2: 1000,
+        stroke: "#dedfd4",
+        "stroke-width": 1,
+      }),
+      svg("line", {
+        x1: 0,
+        y1: tick,
+        x2: 1000,
+        y2: tick,
+        stroke: "#dedfd4",
+        "stroke-width": 1,
+      }),
+    );
+    const xLabel = svg("text", {
+      x: tick,
+      y: 1023,
+      "text-anchor": "middle",
+      fill: "#828577",
+      "font-size": 15,
+    });
+    xLabel.textContent = tick;
+    const yLabel = svg("text", {
+      x: 8,
+      y: 1000 - tick - 8,
+      "text-anchor": "start",
+      fill: "#828577",
+      "font-size": 15,
+    });
+    yLabel.textContent = tick;
+    if (tick > 0 && tick < 1000) plot.append(yLabel);
+    plot.append(xLabel);
+  }
   const current = result.records.find((p) => p.id === selected),
     neighborSet = new Set(current?.neighbors || []);
   if (current)
@@ -110,10 +148,14 @@ function draw() {
   for (const p of result.records) {
     const g = svg("g", {
       class: "point",
+      "data-point": p.id,
       role: "button",
       tabindex: 0,
       "aria-label": `${p.id}, ${p.kind}, ${p.cluster === null ? "noise" : "cluster " + (p.cluster + 1)}`,
     });
+    g.append(
+      svg("circle", { cx: p.x, cy: 1000 - p.y, r: 16, fill: "transparent" }),
+    );
     if (p.kind === "noise")
       g.append(
         svg("path", {
@@ -166,6 +208,9 @@ function draw() {
         e.preventDefault();
         selected = p.id;
         inspect();
+        Array.from(plot.querySelectorAll(".point"))
+          .find((node) => node.dataset.point === p.id)
+          ?.focus({ preventScroll: true });
       }
     };
     plot.append(g);
@@ -356,3 +401,6 @@ $("file").onchange = async () => {
   }
 };
 compute();
+
+$("analysis-open").onclick = () => $("analysis-panel").showModal();
+$("analysis-close").onclick = () => $("analysis-panel").close();
