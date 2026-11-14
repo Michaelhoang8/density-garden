@@ -8,6 +8,8 @@ An interactive DBSCAN workbench for synthetic 2D point clouds. Inspect inclusive
 
 The point cloud sits between density controls and a selected-point inspector. Coordinate guides show the plot scale, while invisible larger targets make points easier to select. Keyboard selection preserves focus as neighborhoods redraw. Radius comparisons, distance profiles, and evidence exports open in Analysis; mobile controls stack above a square plot.
 
+Selected neighborhoods have a soft radial fill and fine lines to their actual radius neighbors. These lines indicate direct neighborhood membership, not reachability across the full cluster. Shaded core points retain cluster colors; border and noise symbols stay distinct.
+
 ## Run
 
 ```sh

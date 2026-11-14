@@ -93,6 +93,28 @@ function draw() {
   const plot = $("plot");
   plot.replaceChildren();
   if (!result) return;
+  const defs = svg("defs", {});
+  const radiusFill = svg("radialGradient", { id: "radius-fill" });
+  radiusFill.append(
+    svg("stop", { offset: 0, "stop-color": "#a9b99c", "stop-opacity": 0.3 }),
+    svg("stop", { offset: 1, "stop-color": "#a9b99c", "stop-opacity": 0.03 }),
+  );
+  defs.append(radiusFill);
+  palette.forEach((color, i) => {
+    const gradient = svg("radialGradient", {
+      id: `point-fill-${i}`,
+      cx: ".35",
+      cy: ".3",
+      r: ".75",
+    });
+    gradient.append(
+      svg("stop", { offset: 0, "stop-color": "#fffaf0" }),
+      svg("stop", { offset: 0.4, "stop-color": color }),
+      svg("stop", { offset: 1, "stop-color": color }),
+    );
+    defs.append(gradient);
+  });
+  plot.append(defs);
   for (const tick of [0, 250, 500, 750, 1000]) {
     plot.append(
       svg("line", {
@@ -139,12 +161,30 @@ function draw() {
         cx: current.x,
         cy: 1000 - current.y,
         r: result.model.eps,
-        fill: "#ffffff44",
+        fill: "url(#radius-fill)",
         stroke: "#806d58",
         "stroke-width": 2,
         "stroke-dasharray": "8 5",
       }),
     );
+  if (current) {
+    const links = svg("g", { "aria-hidden": "true", "pointer-events": "none" });
+    for (const point of result.records) {
+      if (point.id === current.id || !neighborSet.has(point.id)) continue;
+      links.append(
+        svg("line", {
+          x1: current.x,
+          y1: 1000 - current.y,
+          x2: point.x,
+          y2: 1000 - point.y,
+          stroke: color(current),
+          "stroke-width": 1.5,
+          "stroke-opacity": 0.3,
+        }),
+      );
+    }
+    plot.append(links);
+  }
   for (const p of result.records) {
     const g = svg("g", {
       class: "point",
@@ -170,7 +210,10 @@ function draw() {
           cx: p.x,
           cy: 1000 - p.y,
           r: p.kind === "core" ? 7 : 8,
-          fill: p.kind === "core" ? color(p) : "#fbf5ec",
+          fill:
+            p.kind === "core"
+              ? `url(#point-fill-${p.cluster % palette.length})`
+              : "#fbf5ec",
           stroke: color(p),
           "stroke-width": 3,
         }),
